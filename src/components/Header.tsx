@@ -13,7 +13,7 @@ export function Header({ country, onCountryChange }: HeaderProps) {
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo Mockup */}
         <div className="flex-shrink-0 flex items-center">
-          <span className="text-[var(--color-thalia-green)] text-3xl font-extrabold tracking-tight">Book Finder</span>
+          <span className="text-[var(--color-thalia-green)] text-3xl font-extrabold tracking-tight">Books Finder</span>
         </div>
 
         {/* Search Bar Removed (No feature) */}

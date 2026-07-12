@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Book Finder",
+  title: "Books Finder",
   description: "Entdecke neue Bücher basierend auf deinem Geschmack.",
 };
 

@@ -184,13 +184,12 @@ export default function Home() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Button 
-                            variant="secondary"
-                            className="text-xs px-2 py-1 bg-[var(--color-thalia-gray-light)] text-gray-700 hover:bg-gray-200 border border-[var(--color-thalia-gray-border)]"
+                          <button 
+                            className="text-xs px-2 py-1 bg-[var(--color-thalia-gray-light)] text-gray-700 hover:bg-gray-200 border border-[var(--color-thalia-gray-border)] rounded-md font-semibold transition-opacity"
                             onClick={(e) => handleAddSeries(e, book)}
                           >
                             📚 Ganze Serie
-                          </Button>
+                          </button>
                           <span className="text-[var(--color-thalia-green)] font-bold text-lg px-2">+</span>
                         </div>
                       </div>

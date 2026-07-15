@@ -5,7 +5,7 @@ import { BookCard } from '@/components/BookCard';
 import { Button } from '@/components/ui/Button';
 import { Search as SearchIcon } from 'lucide-react';
 import { useBookState, Book } from '@/hooks/useBookState';
-import { getRecommendations, Recommendation } from './actions';
+import { getRecommendations, Recommendation, getSeriesBooks } from './actions';
 
 export default function Home() {
   const { readBooks, addReadBook, removeReadBook, favorites, toggleFavorite, country, setCountry } = useBookState();
@@ -18,6 +18,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Book[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isAddingSeries, setIsAddingSeries] = useState(false);
 
   React.useEffect(() => {
     if (!searchQuery.trim()) {
@@ -52,6 +53,38 @@ export default function Home() {
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery]);
+
+  const handleAddSeries = async (e: React.MouseEvent, book: Book) => {
+    e.stopPropagation();
+    // Close search dropdown immediately
+    setSearchQuery('');
+    setSearchResults([]);
+    
+    setIsAddingSeries(true);
+    try {
+      const seriesBooks = await getSeriesBooks(book.title, book.author);
+      
+      // Filter out duplicate books already in the list
+      const booksToAdd = seriesBooks.filter(sb => {
+        return !readBooks.some(rb => 
+          rb.title.toLowerCase().trim() === sb.title.toLowerCase().trim()
+        );
+      });
+
+      booksToAdd.forEach((sb, index) => {
+        addReadBook({
+           id: `series-${encodeURIComponent(sb.title.toLowerCase())}-${index}-${Date.now()}`,
+           title: sb.title,
+           author: sb.author,
+           coverUrl: undefined 
+        });
+      });
+    } catch(err) {
+      console.error(err);
+    } finally {
+      setIsAddingSeries(false);
+    }
+  };
 
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
@@ -94,7 +127,15 @@ export default function Home() {
         <section>
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
-              <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Meine gelesenen Bücher</h2>
+              <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight flex items-center flex-wrap gap-3">
+                <span>Meine gelesenen Bücher</span>
+                {isAddingSeries && (
+                  <span className="inline-flex items-center text-sm font-semibold text-[var(--color-thalia-green)] bg-green-50 px-3 py-1 rounded-full border border-green-200">
+                    <span className="animate-spin mr-2 h-4 w-4 border-2 border-[var(--color-thalia-green)] border-t-transparent rounded-full"></span>
+                    Serie wird hinzugefügt...
+                  </span>
+                )}
+              </h2>
               <p className="text-gray-600 mt-2">Diese Bücher fließen in deine Empfehlungen mit ein.</p>
             </div>
             
@@ -142,7 +183,16 @@ export default function Home() {
                             <div className="text-gray-600 text-xs mt-0.5 line-clamp-1">{book.author}</div>
                           </div>
                         </div>
-                        <span className="text-[var(--color-thalia-green)] font-bold text-lg">+</span>
+                        <div className="flex items-center gap-2">
+                          <Button 
+                            variant="secondary"
+                            className="text-xs px-2 py-1 bg-[var(--color-thalia-gray-light)] text-gray-700 hover:bg-gray-200 border border-[var(--color-thalia-gray-border)]"
+                            onClick={(e) => handleAddSeries(e, book)}
+                          >
+                            📚 Ganze Serie
+                          </Button>
+                          <span className="text-[var(--color-thalia-green)] font-bold text-lg px-2">+</span>
+                        </div>
                       </div>
                     ))
                   )}

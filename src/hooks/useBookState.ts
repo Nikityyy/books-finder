@@ -41,9 +41,12 @@ export function useBookState() {
   }, [country]);
 
   const addReadBook = (book: Book) => {
-    if (!readBooks.find(b => b.id === book.id)) {
-      setReadBooks([...readBooks, book]);
-    }
+    setReadBooks(prev => {
+      if (!prev.find(b => b.id === book.id)) {
+        return [...prev, book];
+      }
+      return prev;
+    });
   };
 
   const removeReadBook = (id: string) => {
